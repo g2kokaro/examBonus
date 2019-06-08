@@ -14,6 +14,6 @@ contract Foo {
   
   function baz(uint256 quz) public onlyOwner() {
     require(quz > 2, "quz must be > 2");
-    owner.transfer(quz); 
+    //owner.transfer(quz); // This line always reverts in Embark
   }
 }

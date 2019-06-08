@@ -19,12 +19,48 @@ config({
   accounts = web3_accounts
 });
 
-contract("Foo", function (){
+contract("Foo", function () {
   this.timeout(0);
   it("Constructor runs successfully", async function () {
     let address = await Foo.options.address;
     assert.ok(address);
   })
+
+  it("Call from owner with baz > 2", async function () {
+    try {
+      await Foo.methods.baz(3).send();
+    } catch (error) {
+      assert(false);
+    }
+  })
+
+  it("Call from non-owner with baz > 2", async function () {
+    try {
+      await Foo.methods.baz(3).send({ from: accounts[1] });
+    }
+    catch (error) {
+      assert(error.message.includes("require owner = msg.sender"));
+    }
+  })
+
+  it("Call from owner with baz <= 2", async function () {
+    try {
+      await Foo.methods.baz(1).send();
+    }
+    catch (error) {
+      assert(error.message.includes("quz must be > 2"));
+    }
+  })
+
+  it("Call from non-owner with baz <= 2", async function () {
+    try {
+      await Foo.methods.baz(1).send({ from: accounts[1] });
+    }
+    catch (error) {
+      assert(error.message.includes("require owner = msg.sender"));
+    }
+  })
+
 })
 
 // contract("SimpleStorage", function () {
